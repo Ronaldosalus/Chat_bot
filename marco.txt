@@ -1,0 +1,136 @@
+import customtkinter as ctk
+import os
+from langchain_groq import ChatGroq
+from langchain.prompts import ChatPromptTemplate
+from gtts import gTTS
+import playsound
+import PyPDF2
+from tkinter import filedialog
+
+
+
+def falar(texto):
+    tts = gTTS(text=texto, lang='pt', slow=False)
+    caminho_audio = os.path.join(os.getcwd(), "resposta.mp3")  # Caminho absoluto
+    tts.save(caminho_audio)
+    playsound.playsound(caminho_audio)
+
+# Código Marco
+def trisalino(pergunta, mensagens):
+    api_key = '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'
+    os.environ['GROQ_API_KEY'] = api_key
+
+    chat = ChatGroq(model='llama-3.1-70b-versatile')
+    def resposta_bot(mensagens):
+            mensagens_modelo = [('system', 'Você é um assistente feito para programadores, estudantes escolares. criado pelo Ronaldo que é uma criança de 11 anos, chamado Marco.')]
+            mensagens_modelo += mensagens
+            template = ChatPromptTemplate.from_messages(mensagens_modelo)
+            chain = template | chat
+            return chain.invoke({}).content
+
+
+    mensagens.append(('user', pergunta))
+    resposta = resposta_bot(mensagens)
+    mensagens.append(('assistant', resposta))
+    return resposta
+
+class trisalinoApp(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+            
+        # janela
+        self.title('Marco 1.6')
+        self.geometry('800x400')
+        ctk.set_appearance_mode('dark')
+        ctk.set_default_color_theme('dark-blue')
+
+        # voz
+        self.voz_ativa = False
+        
+        # Hist. Mensagens
+        self.mensagens = [] 
+
+        # criando widgets
+        self.title('Marco 1.6')
+        self.geometry('800x400')  # Ajustei a janela para dar mais espaço
+        ctk.set_appearance_mode('dark')  # Tema escuro
+        ctk.set_default_color_theme('dark-blue')
+
+        # Criando a caixa de texto
+        self.chat_textbox = ctk.CTkTextbox(self, width=550, height=300)
+        self.chat_textbox.grid(row=0, column=0, padx=25, pady=20)
+
+        # Configurando as tags da caixa de texto
+        self.chat_textbox.tag_config("user:")
+        self.chat_textbox.tag_config("Marco:")
+
+        # Criando o campo de entrada logo abaixo da caixa de texto
+        self.entry = ctk.CTkEntry(self, width=550, placeholder_text="Digite sua pergunta...")
+        self.entry.grid(row=1, column=0, padx=20, pady=10)
+
+        # Criando um frame para os botões ao lado direito
+        self.frame_botoes = ctk.CTkFrame(self, width=150, height=300)
+        self.frame_botoes.grid(row=0, column=1, padx=10, pady=10, sticky="n")
+
+        # Botão de enviar pergunta dentro do frame à direita
+        self.send_button = ctk.CTkButton(self.frame_botoes, text="Enviar", command=self.enviar_pergunta)
+        self.send_button.grid(row=0, column=0, padx=10, pady=10)
+
+        # Botão de falar dentro do frame à direita
+        self.voice_button = ctk.CTkButton(self.frame_botoes, text="Falar", command=self.toggle_voice)
+        self.voice_button.grid(row=1, column=0, padx=10, pady=10)
+
+        # Botão de carregar PDF dentro do frame à direita
+        self.load_pdf_button = ctk.CTkButton(self.frame_botoes, text="Carregar PDF", command=self.carregar_pdf)
+        self.load_pdf_button.grid(row=2, column=0, padx=10, pady=10)
+
+
+
+        
+    def carregar_pdf(self):
+        caminho_pdf = filedialog.askopenfilename(filetypes=[("PDF files", "*.pdf")])
+        if caminho_pdf:
+            texto_pdf = self.ler_pdf(caminho_pdf)
+            self.chat_textbox.insert(ctk.END, f'---- PDF: {texto_pdf}\n')
+            if self.voz_ativa:
+                falar(texto_pdf)
+
+    def ler_pdf(self, caminho_pdf):
+        with open(caminho_pdf, 'rb') as pdf_file:
+            leitor_pdf = PyPDF2.PdfReader(pdf_file)
+            texto_completo = ""
+            for pagina in range(len(leitor_pdf.pages)):
+                pagina_atual = leitor_pdf.pages[pagina]
+                texto_completo += pagina_atual.extract_text()
+            return texto_completo
+
+    
+    
+    
+    def enviar_pergunta(self):
+        pergunta = self.entry.get()
+        if pergunta.lower == 'x':
+            quit()
+        else:
+            resposta = trisalino(pergunta, self.mensagens)
+            self.chat_textbox.insert(ctk.END, f'----Você: {pergunta}\n')
+            self.chat_textbox.insert(ctk.END, f'Marco: {resposta}\n')
+
+            self.entry.delete(0, ctk.END)
+        if self.voz_ativa:
+            falar(resposta)
+
+        self.entry.delete(0, ctk.END)
+
+
+    def toggle_voice(self):
+        self.voz_ativa = not self.voz_ativa
+        if self.voz_ativa:
+            self.voice_button.configure(text="Parar de falar")
+        else:
+            self.voice_button.configure(text="Falar")
+
+if __name__ == "__main__":
+    app = trisalinoApp()
+    app.mainloop()
+
