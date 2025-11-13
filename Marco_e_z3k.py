@@ -11,7 +11,7 @@ from tkinter import filedialog
 import pyttsx3
 import json
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-
+from api_key import api_key
 
 
 
@@ -72,10 +72,9 @@ falar_com_voz(texto, id_voz)
 
 
 def trisalino(pergunta, mensagens):
-    api_key = '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'
     os.environ['GROQ_API_KEY'] = api_key
 
-    chat = ChatGroq(model='llama3-70b-8192')
+    chat = ChatGroq(model='llama-3.1-8b-instant')
 
 
     def resposta_bot(mensagens):
@@ -115,7 +114,7 @@ def trisalino(pergunta, mensagens):
     return resposta
 
 def resposta_z3k(pergunta, resposta_marco):
-        chat = ChatGroq(model='llama3-70b-8192')
+        chat = ChatGroq(model='llama-3.1-8b-instant')
         
         mensagens_z3k = [
             SystemMessage(

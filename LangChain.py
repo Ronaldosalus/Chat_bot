@@ -4,9 +4,9 @@ from langchain.prompts import ChatPromptTemplate
 from langchain_community.document_loaders import YoutubeLoader
 import PyPDF2
 from tkinter import filedialog, Tk
+from api_key import api_key
 
 # Configuração da chave da API
-api_key = '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'
 os.environ['GROQ_API_KEY'] = api_key
 
 chat = ChatGroq(model='llama-3.1-70b-versatile')
