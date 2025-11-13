@@ -9,7 +9,7 @@ pip install playsound
 pip install pypdf2
 pip install tkinter
 
-as vezes, pode dar um erro no tkinter e no langchain, o do langchain precisa instalar os arquivos build do
+As vezes, pode dar um erro no tkinter e no langchain, o do langchain precisa instalar os arquivos build do
 VS Code de que involva C++, e o tkinter é só criar um novo diretório.
 Todos os arquivos estão salvos tanto no git quanto github, além de ter o Z3K aclopado ai dentro também.
 
