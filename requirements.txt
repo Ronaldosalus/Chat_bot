@@ -1,0 +1,5 @@
+pygame 
+pypdf2
+langchain
+langchain-groq
+pyttsx3
